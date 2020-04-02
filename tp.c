@@ -41,6 +41,8 @@ typedef struct _Point{
 } Point;
 Point *lst_point;
 
+Point * cube;
+Point ** list_cube;
 /* TABLEAUX */
 int sommetsArretes[12][2] = {
 	{0,1},
@@ -196,7 +198,7 @@ void charger3d(char * name){
 		maxVal = max(tmp,n*2);
 		minVal = min(tmp,n*2);
 		meanVal = mean(tmp,n*2);
-		isoVal = meanVal;
+		isoVal = 2;
 		k=0;
 		double step = 1;
 		int limite = sqrt(n);
@@ -234,7 +236,7 @@ void charger3d(char * name){
 int toOctect(double * liste_val_cube){
 	int octet = 0;
 	for (int i = 0; i < 8; i++){
-		if (liste_val_cube[i] > isoVal){
+		if (liste_val_cube[i] < isoVal){
 			octet += (int)pow(2,i);
 		}
 	}
@@ -308,7 +310,7 @@ void casMC(int * listeSommetsSup, double * liste_val_cube, Point * cube){
 
 			Point pts1 = cube[numSommet1];
 			Point pts2 = cube[numSommet2];
-
+			
 			double posX = getInterpolatePositionX(x[pts1.i][pts1.j],x[pts2.i][pts2.j],isoVal,pts1.val,pts2.val);
 			double posY = getInterpolatePositionY(y[pts1.i][pts1.j],y[pts2.i][pts2.j],isoVal,pts1.val,pts2.val);
 			double posZ = getInterpolatePositionZ(z[pts1.z],z[pts2.z],isoVal,pts1.val,pts2.val);
@@ -317,7 +319,6 @@ void casMC(int * listeSommetsSup, double * liste_val_cube, Point * cube){
 			triangles[l][2] = posZ;
 			l++;
 		}
-
 	}
 	for (int i = 0; i < l; i+=3){
 		glBegin(GL_LINE_LOOP);
@@ -330,14 +331,14 @@ void casMC(int * listeSommetsSup, double * liste_val_cube, Point * cube){
 
 void maching_cube(){
 	Point * cube = malloc(8*sizeof(Point));
-	for (int i = 0; i < sqrt(n)-1; i++) {
-		for (int j = 0; j < sqrt(n)-1; j++) {
+	for (int i = 0; i < sqrt(n) - 1; i++) {
+		for (int j = 0; j < sqrt(n) - 1; j++) {
 			int indexP1 = (sqrt(n)*i)+j;
 			int indexP2 = (sqrt(n)*(i+1))+j;
-			int indexP3 = (sqrt(n)*(i+1))+(j+1);
-			int indexP4 = (sqrt(n)*i)+(j+1);
-			int indexP5 = (sqrt(n)*i)+j +n;
-			int indexP6 = (sqrt(n)*(i+1))+j+n;
+			int indexP3 = (sqrt(n)*(i+1))+j+n;
+			int indexP4 = (sqrt(n)*i)+j+n;
+			int indexP5 = (sqrt(n)*i)+(j+1);
+			int indexP6 = (sqrt(n)*(i+1))+(j+1);
 			int indexP7 = (sqrt(n)*(i+1))+(j+1)+n;
 			int indexP8 = (sqrt(n)*i)+(j+1)+n;
 			cube[0] = lst_point[indexP1];
@@ -502,7 +503,7 @@ void display(void) {
 	glLoadIdentity() ;  
 	glRotatef(angle_h, 0, 1, 0);
     glRotatef(angle_v, 1, 0, 0);
-	glBegin(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
     glVertex2f(-0.7,-0.7);
     glVertex2f(0.7,-0.7);
     glVertex2f(0.7,0.7);
@@ -539,7 +540,6 @@ void display(void) {
 					snprintf(output, sizeof(double), "%.2f", number);
 					int iCoord = lst_point[k].i;
 					int jCoord = lst_point[k].j;
-					glRectf(x[iCoord][jCoord],y[iCoord][jCoord]-0.03,x[iCoord][jCoord]+0.01,y[iCoord][jCoord]-0.02);
 					if (lst_point[k].z == 0){
 						glRasterPos3f(x[(int)lst_point[k].i][(int)lst_point[k].j],y[(int)lst_point[k].i][(int)lst_point[k].j],0.2);
 					} else {
@@ -553,8 +553,8 @@ void display(void) {
 	}
 	if (showCube){
 		double nb = sqrt(n);
-		for (int i = 0; i < nb -1; i++){
-			for (int j = 0; j < nb -1; j++){
+		for (int i = 0; i < sqrt(n) - 1; i++){
+			for (int j = 0; j < sqrt(n) - 1; j++){
 		  		glBegin(GL_LINE_LOOP);
 		  		glVertex3f( x[i+1][j+1], y[i+1][j+1], 0.4  ); 
 		  		glVertex3f( x[i+1][j], y[i+1][j], 0.4  ); 
@@ -563,21 +563,21 @@ void display(void) {
 				glEnd();
 				glBegin(GL_LINE_LOOP);
 				glVertex3f( x[i+1][j+1], y[i+1][j+1], 0.2  ); 
-		  		glVertex3f( x[i+1][j], y[i+1][j], 0.2  ); 
-				glVertex3f( x[i][j], y[i][j], 0.2  ); 
-				glVertex3f( x[i][j+1], y[i][j+1], 0.2  ); 
+		  		glVertex3f( x[i+1][j], y[i+1][j],  0.2 ); 
+				glVertex3f( x[i][j], y[i][j],  0.2  ); 
+				glVertex3f( x[i][j+1], y[i][j+1],  0.2  ); 
 				glEnd();
 				glBegin(GL_LINE_LOOP);
-				glVertex3f( x[i+1][j+1], y[i+1][j+1], 0.2  ); 
-				glVertex3f( x[i+1][j], y[i+1][j], 0.2  );
+				glVertex3f( x[i+1][j+1], y[i+1][j+1],  0.2  ); 
+				glVertex3f( x[i+1][j], y[i+1][j],  0.2  );
 				glVertex3f( x[i+1][j], y[i+1][j], 0.4  ); 
 				glVertex3f( x[i+1][j+1], y[i+1][j+1], 0.4  ); 
 				glEnd();
 				glBegin(GL_LINE_LOOP);
-				glVertex3f( x[i][j+1], y[i][j+1], 0.2  ); 
-				glVertex3f( x[i][j], y[i][j], 0.2  ); 
-				glVertex3f( x[i][j], y[i][j], 0.4  );
-				glVertex3f( x[i][j+1], y[i][j+1], 0.4  ); 
+				glVertex3f( x[i][j+1], y[i][j+1],  0.2  ); 
+				glVertex3f( x[i][j], y[i][j],  0.2  ); 
+				glVertex3f( x[i][j], y[i][j], 0.4 );
+				glVertex3f( x[i][j+1], y[i][j+1],0.4 ); 
 				glEnd();
 			}
 		}	
@@ -631,8 +631,6 @@ int main(int argc, char ** argv){
 	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
 
-	drawIsoLigne();
-	maching_cube();
 	glutMainLoop();
 
 	return EXIT_SUCCESS;
